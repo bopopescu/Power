@@ -38,7 +38,7 @@ except ImportError:
 try:  # pymysqlpool
     from pymysqlpool.pool import Pool
 except ImportError:
-    print("Cannot import pymysqlpool, is it installed?\nExiting...")
+    print("Cannot import pymysqlpool, pip install pymysql-pooling is it installed?\nExiting...")
     sys.exit
 # *********************************************************************
 try:  # pylab
@@ -66,14 +66,22 @@ except ImportError:
 # *********************************************************************
 def create_conn():
     try:
+    ##https://github.com/egmkang/PyMySQLPool
     ##https://pypi.org/project/pymysql-pooling/
-        cursor = pymysql.cursors.DictCursor
-        return pymysql.connect(host=mysql_host, \
+    #    cursor = pymysql.cursors.DictCursor
+        pool = Pool(host=mysql_host, \
                                port=int(mysql_port), \
                                user=mysql_user, \
                                password=mysql_password, \
                                database=mysql_db, \
                                charset='utf8')
+        pool.init()
+        connection = pool.get_conn()
+        cursor = connection.cursor() 
+        cursor.execute(fn_sql)
+        result = cursor.fetchall()
+        return result
+ 
     except pymysql.err.OperationalError as err:
         print('create_conn ', err)
         os._exit(1)
@@ -141,8 +149,8 @@ def day_job():
 # *********************************************************************
 def myslread(fnin_sql, fnin_title, fnin_filename):
     try:
-        conn = pool.get()
-        cursor = conn.cursor()
+#        conn = pool.get()
+#        cursor = conn.cursor()
         for record in graphArray:
             fn_sql = (fnin_sql.replace("*record*", record))
             fn_title = (fnin_title.replace("*record*", record))
@@ -154,6 +162,8 @@ def myslread(fnin_sql, fnin_title, fnin_filename):
                 print("FileName =",fn_filename)
                 print("********************")
             # cursor = db.cursor()
+            connection = pool.get_conn()
+            cursor = connection.cursor() 
             cursor.execute(fn_sql)
             result = cursor.fetchall()
             t = []
@@ -192,14 +202,14 @@ def myslread(fnin_sql, fnin_title, fnin_filename):
             print("SQL=",fnin_sql)
             print("Title =",fnin_title)
             print("FileName =", fnin_filename)
-        cursor.close()
+        #cursor.close()
         conn.close()
         sys.exit
 
 # *********************************************************************
 def main_function():
-    conn = pool.get()
-    cursor = conn.cursor()
+#    conn = pool.get()
+#    cursor = conn.cursor()
     maxdevice = max(slaveAddresses)
     for s in slaveAddresses:
         try:
@@ -254,6 +264,8 @@ def main_function():
                             print(sql, str(sdata))
                         try:
                             # Execute the SQL command
+                            connection = pool.get_conn()
+                            cursor = connection.cursor() 
                             cursor.execute(sql, sdata)
                         except pymysql.Error as e:
                             print("could not close execute pymysql %d: %s" % (e.args[0], e.args[1]))
@@ -333,7 +345,7 @@ except configparser.ParsingError as err:
 # *********************************************************************
 # End read config
 # *********************************************************************
-pool = pymysqlpool.Pool(create_instance=create_conn)
+#pool = pymysqlpool.Pool(create_instance=create_conn)
 graphArray = []
 device = {}
 data = {}
@@ -364,8 +376,8 @@ for i in device:
         graphArray.append("SolarAlarm")
 ts = timestamp.interval(interval)
 
-conn = pool.get()
-cursor = conn.cursor()
+#conn = pool.get()
+#cursor = conn.cursor()
 scheduler = BlockingScheduler()
 scheduler.add_job(main_function, 'cron', second = '*/30')
 scheduler.add_job(sec_job,       'cron', minute = '*/1')
