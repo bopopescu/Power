@@ -1,8 +1,18 @@
-
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 import time
-import mysql.connector.pooling
+import sys
+import os
+
+import mysql.connector
+from mysql.connector import Error
+from mysql.connector import pooling#
+
+#try:
+#     import mysql.connector.pooling
+#except ImportError:
+#     print("Cannot import  pooling")
+#     sys.exit
 # *********************************************************************
 try:  # ConfigParser
     import configparser
