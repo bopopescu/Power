@@ -12,9 +12,9 @@ class pzem(minimalmodbus.Instrument):
     ""","""
 
     # *********************************************************************
-    def __init__(self, serialPort, slaveAddress=1):
+    def __init__(self, serialPort, subordinateAddress=1):
         """ Create monitor device instance """
-        minimalmodbus.Instrument.__init__(self, serialPort, slaveAddress)
+        minimalmodbus.Instrument.__init__(self, serialPort, subordinateAddress)
         self.serial.timeout = 0.1
         self.serial.baudrate = 9600
         self.serial.stopbits = 1
@@ -107,8 +107,8 @@ class pzem(minimalmodbus.Instrument):
         return True
 
     # *********************************************************************
-    def setSlaveAddress(self, address):
-        """Set a new slave address (1 to 247), initially set to 1 from factory.
+    def setSubordinateAddress(self, address):
+        """Set a new subordinate address (1 to 247), initially set to 1 from factory.
         Each device must have a unique address, Max of 31 devices per network."""
         return self.write_register(2, address, 0, 6)
 
@@ -122,13 +122,13 @@ if __name__ == "__main__":
     import time
 
     serialPort = "/dev/ttyUSB0"
-    # Using a slave address other than the factory default of "1".
-    slaveAddress = 2
-    pz = pzem(serialPort, slaveAddress)
+    # Using a subordinate address other than the factory default of "1".
+    subordinateAddress = 2
+    pz = pzem(serialPort, subordinateAddress)
     time.sleep(10)
     print(pz.getPower())
     print(pz.getEnergy())
     print(pz.getVoltage())
-#    pz.setSlaveAddress(2)
+#    pz.setSubordinateAddress(2)
 
 # *********************************************************************

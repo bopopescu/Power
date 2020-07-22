@@ -210,8 +210,8 @@ def myslread(fnin_sql, fnin_title, fnin_filename):
 def main_function():
 #    conn = pool.get()
 #    cursor = conn.cursor()
-    maxdevice = max(slaveAddresses)
-    for s in slaveAddresses:
+    maxdevice = max(subordinateAddresses)
+    for s in subordinateAddresses:
         try:
             i = int(s)
             device[i] = pzem.pzem(serialPort, i)
@@ -331,7 +331,7 @@ try:  # ConfigParser
     serialPort = config.get('serial', 'port')
     Debug = config.getboolean('debug', 'debug')
     interval = int(config.get('timeing', 'interval'))
-    slaveAddresses = [int(x) for x in config.get('serial', 'addresses').split(',')]
+    subordinateAddresses = [int(x) for x in config.get('serial', 'addresses').split(',')]
 except configparser.NoOptionError as err:
     print('Error ', err)
     sys.exit
@@ -349,7 +349,7 @@ except configparser.ParsingError as err:
 graphArray = []
 device = {}
 data = {}
-for s in slaveAddresses:
+for s in subordinateAddresses:
     try:
         i = int(s)
         device[i] = pzem.pzem(serialPort, i)

@@ -21,7 +21,7 @@ try:  # ConfigParser
     serialPort = config.get('serial', 'port')
     Debug = config.getboolean('debug', 'debug')
     interval = int(config.get('timeing', 'interval'))
-    slaveAddresses = [int(x) for x in config.get('serial', 'addresses').split(',')]
+    subordinateAddresses = [int(x) for x in config.get('serial', 'addresses').split(',')]
 except configparser.NoOptionError as err:
     print('Error ', err)
     sys.exit
